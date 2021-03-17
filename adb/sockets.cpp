@@ -387,6 +387,8 @@ asocket* create_local_socket(int fd) {
     if (s == NULL) {
         fatal("cannot allocate socket");
     }
+
+    disable_tcp_nagle(fd);
     s->fd = fd;
     s->enqueue = local_socket_enqueue;
     s->ready = local_socket_ready;

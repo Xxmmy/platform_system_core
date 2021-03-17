@@ -173,7 +173,8 @@ static void server_socket_thread(void* arg) {
             D("server: new connection on fd %d", fd);
             close_on_exec(fd);
             disable_tcp_nagle(fd);
-            register_socket_transport(fd, "host", port, 1);
+            //register_socket_transport(fd, "host", port, 1);
+            register_socket_transport(fd, NULL, port, 1);
         }
     }
     D("transport: server_socket_thread() exiting");
@@ -239,6 +240,8 @@ static void qemu_socket_thread(void* arg) {
     adb_thread_setname("qemu socket");
     D("transport: qemu_socket_thread() starting");
 
+    adb_thread_create(server_socket_thread, arg);
+
     /* adb QEMUD service connection request. */
     snprintf(con_name, sizeof(con_name), "qemud:adb:%d", port);
 
@@ -248,7 +251,7 @@ static void qemu_socket_thread(void* arg) {
         /* This could be an older version of the emulator, that doesn't
          * implement adb QEMUD service. Fall back to the old TCP way. */
         D("adb service is not available. Falling back to TCP socket.");
-        adb_thread_create(server_socket_thread, arg);
+        //adb_thread_create(server_socket_thread, arg);
         return;
     }
 
